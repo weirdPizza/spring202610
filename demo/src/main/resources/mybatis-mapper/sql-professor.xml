@@ -6,6 +6,7 @@
 	<!-- 여러개 검색 -->
 	<select id="selectProfessorList" resultType="com.example.demo.model.Professor" parameterType="hashmap">
 		SELECT * FROM PROFESSOR
+		WHERE NAME LIKE CONCAT('%',#{keyword},'%')
 	</select>
 	<!-- 하나만 검색 -->
 	<select id="selectProfessor" resultType="com.example.demo.model.Professor" parameterType="hashmap">
