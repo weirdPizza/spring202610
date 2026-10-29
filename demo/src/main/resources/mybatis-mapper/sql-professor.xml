@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ProfessorMapper">
+	<!-- 여러개 검색 -->
+	<select id="selectProfessorList" resultType="com.example.demo.model.Professor" parameterType="hashmap">
+		SELECT * FROM PROFESSOR
+	</select>
+	<!-- 하나만 검색 -->
+	<select id="selectProfessor" resultType="com.example.demo.model.Professor" parameterType="hashmap">
+		SELECT * FROM PROFESSOR WHERE PROFNO = #{profNo}
+	</select>
+
+	<!-- 삭제 -->
+	<delete id="deleteProfessor" parameterType="hashmap">
+		DELETE FROM PROFESSOR WHERE PROFNO = #{profNo}
+	</delete>
+	
+	<!-- 추가 -->
+	<insert id="insertProfessor" parameterType="hashmap">
+		INSERT INTO PROFESSOR (PROFNO, NAME, POSITION, PAY, DEPTNO) 
+		VALUES (#{profNo}, #{name}, #{position}, #{pay}, #{deptNo})
+	</insert>
+	
+	<!--디파트먼트는 프로페서 테이블에 의존적이니까 여기서 다 작업하라-->
+	<!--DEPARTMENT-->
+	<select id="selectDeptList" parameterType="hashmap" resultType="com.example.demo.model.Professor">
+		SELECT * FROM DEPARTMENT WHERE DNAME LIKE '%학과'
+	</select>
+</mapper>

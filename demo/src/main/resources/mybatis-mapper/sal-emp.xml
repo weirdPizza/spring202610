@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.EmpMapper">
+	<!-- 여러개 검색 -->
+	<select id="selectEmpList" resultType="com.example.demo.model.Emp">
+		SELECT * FROM EMP
+	</select>
+	
+	<!-- 삭제 -->
+	<delete id="deleteEmp" parameterType="hashmap"> 
+		DELETE FROM EMP WHERE EMPNO = #{empNo} 
+		<!-- 이렇게 #{키}로 값 꺼낼 수 있음. -->
+	</delete>
+	
+	
+</mapper>
