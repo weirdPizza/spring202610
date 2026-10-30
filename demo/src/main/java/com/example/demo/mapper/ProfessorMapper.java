@@ -23,4 +23,10 @@ public interface ProfessorMapper {
 	
 	// 학과 목록
 	List<Professor> selectDeptList(HashMap<String, Object> map);
+
+	// 교수 업데이트
+	int updateProfessor(HashMap<String, Object> map);
+
+	// 직급 목록
+	List<Professor> selectPositionList(HashMap<String, Object> map);
 }

@@ -5,8 +5,16 @@
 <mapper namespace="com.example.demo.mapper.ProfessorMapper">
 	<!-- 여러개 검색 -->
 	<select id="selectProfessorList" resultType="com.example.demo.model.Professor" parameterType="hashmap">
-		SELECT * FROM PROFESSOR
+		SELECT * FROM PROFESSOR P
+		INNER JOIN DEPARTMENT D
+		ON P.DEPTNO = D.DEPTNO
 		WHERE NAME LIKE CONCAT('%',#{keyword},'%')
+		<if test="deptNo != null and deptNo != ''"> <!--test가 속성-->		
+			AND P.DEPTNO = #{deptNo}
+		</if>
+		<if test="position != null and position != ''"> <!--test가 속성-->		
+			AND POSITION = #{position}
+		</if>
 	</select>
 	<!-- 하나만 검색 -->
 	<select id="selectProfessor" resultType="com.example.demo.model.Professor" parameterType="hashmap">
@@ -24,9 +32,21 @@
 		VALUES (#{profNo}, #{name}, #{position}, #{pay}, #{deptNo})
 	</insert>
 	
+	<!-- 업데이트 -->
+	<update id="updateProfessor" parameterType="hashmap">
+		UPDATE PROFESSOR
+		SET NAME = #{name}, POSITION = #{position}, PAY = #{pay}
+		WHERE PROFNO = #{profNo} 
+	</update>
+	
 	<!--디파트먼트는 프로페서 테이블에 의존적이니까 여기서 다 작업하라-->
 	<!--DEPARTMENT-->
 	<select id="selectDeptList" parameterType="hashmap" resultType="com.example.demo.model.Professor">
 		SELECT * FROM DEPARTMENT WHERE DNAME LIKE '%학과'
+	</select>
+	
+	<!--직급-->
+	<select id="selectPositionList" parameterType="hashmap" resultType="com.example.demo.model.Professor">
+		select distinct position from professor
 	</select>
 </mapper>

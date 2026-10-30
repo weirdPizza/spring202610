@@ -30,6 +30,21 @@ public class ProfessorController {
 
 		return "/professor/add";
 	} 
+	// 상세보기 페이지
+	@RequestMapping("/professor/view.do") 
+	public String view(Model model,  @RequestParam HashMap<String, Object> map) throws Exception{
+		System.out.println(map);
+		// model은 jsp와 서버를 잇는 통로. 서버 데이터를 model에 담으면 jsp에서 꺼낼 수 있음. 
+		model.addAttribute("profNo", map.get("profNo")); // map으로 안보내고 값만 보내려고 map.get 한거임.
+		return "/professor/view";
+	} 
+	
+	// 수정 페이지
+	@RequestMapping("/professor/edit.do") 
+	public String edit(Model model,  @RequestParam HashMap<String, Object> map) throws Exception{
+		model.addAttribute("profNo", map.get("profNo"));
+		return "/professor/edit";
+	} 
 	
 	@RequestMapping(value = "/professor/list.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	@ResponseBody
@@ -82,4 +97,14 @@ public class ProfessorController {
 		
 		return new Gson().toJson(resultMap); 
 	}
+	
+	@RequestMapping(value = "/professor/edit.dox", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@ResponseBody
+	public String editProfessor(Model model, @RequestParam HashMap<String, Object> map) throws Exception {
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		resultMap = professorService.editProfessor(map);
+		
+		return new Gson().toJson(resultMap); // json 형태로 바꿔 리턴해야. 
+	}
+	
 }
