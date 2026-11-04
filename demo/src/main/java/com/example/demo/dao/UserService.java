@@ -25,13 +25,13 @@ public class UserService {
 				// public getter 메소드로 이름 갖고오기 가능!
 			}else {
 				resultMap.put("loginFlg", false);
-				resultMap.put("message", Message.login_fail);
+				resultMap.put("message", Message.LOGIN_FAIL);
 			}
 			resultMap.put("result", "success");
 		} catch (Exception e) {
 			// TODO: handle exception
 			resultMap.put("result", "fail");
-			resultMap.put("message", Message.db_err);
+			resultMap.put("message", Message.DB_ERR);
 			System.err.println(e.getMessage());
 		}
 		return resultMap;
