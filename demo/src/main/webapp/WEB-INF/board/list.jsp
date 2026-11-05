@@ -176,11 +176,14 @@
                         alert(data.message);
                         self.fnList();
                         self.selectItemList=[];
-                        self.checked = false;
+                        self.checked = false; // 여기서 checked flase로 초기화
                     }
                 });
             },
-            fnSelectItem : function(){
+            fnSelectItem : function(){ 
+                // 이 함수가 실행되는 순서가 checked의 value에 true가 들어가는 것보다 먼저임.
+                // 그래서 밑에 if(!self.checked)조건을 검사할 때 checked는 false에서 true로 넘어가려는 상태.
+                // 즉, 아직 false 상태임!! 그래서 이 코드가 작동하는 것.
                 let self = this;
                 // for(let i=0; i<self.list.length; i++){
                 //     self.selectItemList.push(self.list[i].boardNo);
