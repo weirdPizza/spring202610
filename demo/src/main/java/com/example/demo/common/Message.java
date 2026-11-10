@@ -12,4 +12,7 @@ public class Message {
 //	사실 static은 대문자로 해야함!!!!
 	public static final String DELETE_SUCCESS = "삭제되었습니다.";
 	public static final String DELETE_FAIL = "삭제에 실패했습니다. 나중에 다시 시도해주세요.";
+	
+	public static final String INSERT_SUCCESS = "등록되었습니다.";
+	public static final String INSERT_FAIL = "등록에 실패했습니다. 나중에 다시 시도해주세요.";
 }

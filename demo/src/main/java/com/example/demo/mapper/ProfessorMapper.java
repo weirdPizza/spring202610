@@ -12,6 +12,9 @@ public interface ProfessorMapper {
 	// 교수 목록
 	List<Professor> selectProfessorList(HashMap<String, Object> map);
 	
+	// 게시글 개수
+	int selectProfessorCount(HashMap<String, Object> map);
+	
 //	교수 검색(교수번호-pk로 검색)
 	Professor selectProfessor(HashMap<String, Object> map);
 	

@@ -5,13 +5,13 @@
 <mapper namespace="com.example.demo.mapper.UserMapper">
 	
 	<select id="selectUser" resultType="com.example.demo.model.User" parameterType="hashmap">
-		SELECT * FROM TBL_USER WHERE USER_ID = #{userId} AND PWD = #{pwd}
+		SELECT * FROM TBL_USER WHERE USER_ID = #{userId}<!-- AND PWD = #{pwd}-->
 		<!--사실 비번은 여기서 직접적으로 비교하면 안됨. 왜냐면 해시화할 거라서-->
 	</select>
 	
 	<!-- 추가 -->
 	<insert id="insertUser" parameterType="hashmap">
-		INSERT INTO TBL_USER (USER_ID, PWD, USER_NAME, ADDR) 
-		VALUES (#{userId}, #{pwd}, #{userName}, #{addr})
+		INSERT INTO TBL_USER
+		VALUES (#{userId}, #{hashPwd}, #{userName}, #{addr}, 'C')
 	</insert>
 </mapper>

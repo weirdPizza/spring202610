@@ -22,6 +22,11 @@
         tr:nth-child(even){
             background-color: azure;
         }
+
+        #paging .active {
+            font-weight: bold;
+            color : black;
+        }
     </style>
 </head>
 <body>
@@ -42,6 +47,14 @@
                 <option value="">:: 전체 ::</option>
                 <option v-for="item in positionList" :value="item.position">{{item.position}}</option>
             </select>
+            |
+            개수 : 
+            <select class="table" v-model="pageSize" @change="fnList">
+                <option value="5">5개씩</option>
+                <option value="10">10개씩</option>
+                <option value="20">20개씩</option>
+                <option value="50">50개씩</option>
+            <select>
         </div>
         <table>
             <tr>
@@ -66,8 +79,13 @@
                 <td colspan="7">조건에 맞는 데이터가 없습니다.</td>
             </tr>
         </table>
+        <div id="paging">
+            <a href="javascript:;" v-if="currentPage != 1" @click="currentPage--; fnList();">◀</a>
+            <a @click="currentPage = item; fnList();" :class="{active : currentPage == item}" href="javascript:;" v-for="item in idx">{{item}}</a>
+            <a href="javascript:;" v-if="currentPage != idx" @click="currentPage++; fnList();">▶</a>
+        </div>
+        <a href="add.do"><button>교수추가</button></a>
     </div>
-    <a href="add.do"><button>교수추가</button></a>
 </body>
 </html>
 
@@ -81,7 +99,11 @@
                 keyword: "",
                 deptNo : "",
                 positionList: [],
-                position:""
+                position:"",
+
+                idx : 1, // 페이징 갯수(최대 페이지 수)
+                pageSize : 5, // 한페이지에 출력할 개수
+                currentPage : 1 // 현재 페이지
             };
         },
         methods: {
@@ -91,7 +113,10 @@
                 let param = {
                     keyword : self.keyword,
                     deptNo : self.deptNo,
-                    position : self.position
+                    position : self.position,
+
+                    limit : self.pageSize,
+                    offset : self.pageSize * (self.currentPage - 1)
                 };
                 $.ajax({
                     url: "http://localhost:8080/professor/list.dox",
@@ -103,6 +128,8 @@
                         self.list = data.list;
                         self.deptList = data.deptList;
                         self.positionList = data.positionList;
+
+                        self.idx = Math.ceil( data.count / self.pageSize );
                     }
                 });
             },

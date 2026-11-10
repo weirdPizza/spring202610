@@ -16,7 +16,16 @@ public class ProfessorService {
 	
 	public HashMap<String, Object> getProfessorList(HashMap<String, Object> map){
 		HashMap<String, Object> resultMap = new HashMap<>(); 
-		List<Professor> list =professorMapper.selectProfessorList(map);
+		
+		String limit = (String) map.get("limit"); // 받은 맵에서 문자열로 꺼내
+		String offset = (String) map.get("offset");
+		map.put("limit", Integer.parseInt(limit)); // 쿼리를 향한 전달은 정수로
+		map.put("offset", Integer.parseInt(offset)); // map은 쿼리로 보내는 용임!!! 그래서 이렇게 넣어주고 쿼리 수행해야함 (순서 1)
+		
+		int count = professorMapper.selectProfessorCount(map); // 이건 count 쿼리
+		resultMap.put("count", count); // 아작스로 보내는 용
+		
+		List<Professor> list =professorMapper.selectProfessorList(map); // (순서 2)
 		List<Professor> deptList = professorMapper.selectDeptList(map);
 		List<Professor> positionList = professorMapper.selectPositionList(map);
 		

@@ -12,7 +12,7 @@
     <style>
         #app{
             width: 800px;
-            margin: 20px auto;
+            margin: 40px auto;
         }
         table {
             width: 750px;
@@ -54,17 +54,37 @@
         #paging .active{
             font-weight: bold;
         }
+
+        .table{
+            margin-bottom: 8px;
+            width: 80px;
+            text-align: center;
+        }
+        .search{
+            text-align: center;
+        }
+        .search input{
+            height: 24px;
+            width: 240px;
+        }
+
     </style>
 </head>
 <body>
     <div id="app">
+        <h3>{{sessionName}}님 환영합니다!</h3>
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
-        <select @change="fnList">
-            <option v-model="pageSize" value="">::전체::</option>
-            <option v-model="pageSize" value="5">5개씩</option>
-            <option v-model="pageSize" value="10">10개씩</option>
-            <option v-model="pageSize" value="20">20개씩</option>
-            <option v-model="pageSize" value="50">50개씩</option>
+        <div class="search">
+            검색어 : <input type="text" @keyup.enter="fnList" v-model="keyword" placeholder="검색어를 입력해주세요.">
+            <button @click="fnList">검색</button>
+        </div>
+        <select class="table" v-model="pageSize" @change="fnList">
+            <option value="">::전체::</option>
+            <!-- 전체 처리 필요 -->
+            <option value="5">5개씩</option>
+            <option value="10">10개씩</option>
+            <option value="20">20개씩</option>
+            <option value="50">50개씩</option>
         <select>
         <table>
             <tr>
@@ -79,7 +99,7 @@
                 <!-- <td><input type="radio" name="board" v-model="selectItem" :value="item.boardNo"></td> -->
                 <td><input type="checkbox" @change="fnSelect" name="board" v-model="selectItemList" :value="item.boardNo"></td>
                 <td>{{item.boardNo}}</td>
-                <td><a href="javascript:;">{{item.title}}</a>
+                <td><a href="javascript:;" @click="fnView(item.boardNo)">{{item.title}}</a>
                     <span class="cnt">[{{item.cnt}}]</span>
                 </td>
                 <td>{{item.userId}}</td>
@@ -87,9 +107,14 @@
             </tr>
         </table>
         <div id="paging">
+            <a href="javascript:;" v-if="currentPage != 1" @click="currentPage--; fnList();">◀</a>
             <a @click="currentPage = item; fnList();" :class="{active : currentPage == item}" href="javascript:;" v-for="item in idx">{{item}}</a>
+            <a href="javascript:;" v-if="currentPage != idx" @click="currentPage++; fnList();">▶</a>
+            <!-- 마지막 페이지가(idx) 아닐 때 보여야 함. -->
         </div>
         <!-- <button @click="fnRemove">삭제</button> -->
+        <a href="add.do"><button>글쓰기</button></a>
+        <!-- 만약 /add.do 슬래시 넣고 싶다면 board/add.do까지 작성해줘야 함 -->
         <button @click="fnRemoveAll">삭제</button>
     </div>
 </body>
@@ -100,6 +125,10 @@
         data() {
             return {
                 // 변수 - (key : value)
+                sessionId : "${sessionId}",
+                sessionRole : "${sessionRole}",
+                sessionName : "${sessionName}",
+
                 list:[],
                 selectItem : "", // 라디오 버튼으로 삭제할 때
                 selectItemList: [], // 체크박스로 삭제할 때
@@ -108,7 +137,9 @@
                 
                 idx : 1, // 페이징 개수(최대 페이지 수)
                 pageSize : 5, // 한페이지에 출력할 개수
-                currentPage : 1 // 현재 페이지
+                currentPage : 1, // 현재 페이지
+
+                keyword : "" // 검색어
             };
         },
         methods: {
@@ -117,7 +148,9 @@
                 let self = this;
                 let param = {
                     limit : self.pageSize,
-                    offset: self.pageSize * (self.currentPage-1) 
+                    offset: self.pageSize * (self.currentPage-1),
+                    
+                    keyword: self.keyword
                 };
                 $.ajax({
                     url: "http://localhost:8080/board/list.dox",
@@ -199,6 +232,10 @@
             fnSelect : function(){
                 let self = this;
                 self.checked = self.list.length == self.selectItemList.length;
+            },
+            fnView : function(boardNo){
+                let self = this;
+                pageChange("view.do", {boardNo : boardNo});
             }
         }, // methods
         mounted() {

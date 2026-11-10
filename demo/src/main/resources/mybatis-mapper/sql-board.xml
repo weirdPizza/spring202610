@@ -6,11 +6,26 @@
 	<!-- 여러개 검색 -->
 	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.demo.model.Board">
 		SELECT * FROM TBL_BOARD
+		WHERE TITLE LIKE CONCAT('%',#{keyword},'%')
+		ORDER BY BOARDNO DESC
 		LIMIT #{limit} OFFSET #{offset}
 	</select>
 	
 	<select id="selectBoardCount" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*) FROM TBL_BOARD
+		WHERE TITLE LIKE CONCAT('%',#{keyword},'%')
+		<!--페이징을 위한 총 게시글 수 구하는 쿼리에도 똑같이 키워드 조건 줘야 함.-->
+	</select>
+	
+	<!--한 개 검색-->
+	<select id="selectBoard" parameterType="hashmap" resultType="com.example.demo.model.Board">
+		SELECT * FROM TBL_BOARD
+		WHERE BOARDNO = #{boardNo}
+	</select>
+	
+	<select id="selectBoardFile" parameterType="hashmap" resultType="com.example.demo.model.File">
+		SELECT * FROM TBL_BOARD_FILE
+		WHERE BOARDNO = #{boardNo}
 	</select>
 	
 	<!-- 삭제 -->
@@ -26,4 +41,27 @@
 			#{item}
 		</foreach>
 	</delete>
+	
+		<!-- 추가 -->
+	<insert id="insertBoard" parameterType="hashmap" useGeneratedKeys="true" keyColumn="BOARDNO" keyProperty="boardNo">
+	<!--pk(increment num)를 리턴 해줌-->
+	<!--keyProperty = "boardNo" -> BOARDNO컬럼의 값을 boardNo의 이름으로 리턴 받겠다. -->
+		INSERT INTO TBL_BOARD
+		VALUES (NULL, #{title}, #{contents}, #{sessionId}, 0, #{kind}, NOW(), NOW()) 
+		<!--null 입력하면 오토 increment니까 알아서 증가함-->
+		<!-- userId는 잠깐 하드코딩! 아직 세션 안배움. -->
+	</insert>
+	
+		<!-- 업데이트 -->
+	<update id="updateBoard" parameterType="hashmap">
+		UPDATE TBL_BOARD 
+		SET TITLE = #{title}, CONTENTS = #{contents}, KIND = #{kind}, UDATETIME = NOW()
+		WHERE BOARDNO = #{boardNo} 
+		<!--업데이트 했으면 UDATETIME 수정해줘야!-->
+	</update>
+	
+	<insert id="insertBoardFile" parameterType="hashmap">
+		INSERT INTO TBL_BOARD_FILE
+		VALUES(NULL, #{idx}, #{path}, #{fileName}, #{orgName}, #{size}, #{extName})
+	</insert>
 </mapper>

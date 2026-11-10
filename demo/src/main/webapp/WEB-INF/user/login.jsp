@@ -65,21 +65,21 @@
                     data: param,
                     success: function (data) {
                         console.log(data);
-                        // if(data.result == "success"){
-                        //     if(data.loginFlg){
-                        //         alert("로그인 성공");
-                        //         location.href="/professor/list.do";
-                        //     }else{
-                        //         alert("로그인 실패");
-                        //     }
-                        // }else{
-                        //     //alert("시스템(서버) 에러로 로그인 실패");
-                        //     alert(data.message);
-                        //     // 이렇게 서버에서 보내면 공통된 메세지(에러) 보내기 가능
-                        // }
+                        if(data.result == "success"){
+                             if(data.loginFlg){
+                                 alert("로그인 성공");
+                                 location.href="/professor/list.do";
+                             }else{
+                                 alert("로그인 실패");
+                             }
+                         }else{
+                             //alert("시스템(서버) 에러로 로그인 실패");
+                             alert(data.message);
+                             // 이렇게 서버에서 보내면 공통된 메세지(에러) 보내기 가능
+                         }
                         alert(data.message);
                         if(data.loginFlg){
-                            location.href="/professor/list.do";
+                            location.href=data.url;
                         }
                     }
                 });

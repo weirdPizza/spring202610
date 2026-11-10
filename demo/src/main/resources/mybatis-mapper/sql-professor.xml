@@ -15,7 +15,26 @@
 		<if test="position != null and position != ''"> <!--test가 속성-->		
 			AND POSITION = #{position}
 		</if>
+		LIMIT #{limit} OFFSET #{offset}
 	</select>
+	
+	<!-- 페이징 쿼리 -->
+	<!-- 여러개 검색 쿼리와 페이징 쿼리는 근본적으로 같아야 함. 왜냐면 같은 조건으로 개수를 비교하니까 -->
+	<select id="selectProfessorCount" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) FROM PROFESSOR P
+		INNER JOIN DEPARTMENT D
+		ON P.DEPTNO = D.DEPTNO
+		WHERE NAME LIKE CONCAT('%',#{keyword},'%')
+		<if test="deptNo != null and deptNo != ''"> <!--test가 속성-->		
+			AND P.DEPTNO = #{deptNo}
+		</if>
+		<if test="position != null and position != ''"> <!--test가 속성-->		
+			AND POSITION = #{position}
+		</if>
+		<!--페이징을 위한 총 게시글 수 구하는 쿼리에도 똑같이 키워드 조건 줘야 함.-->
+		
+	</select>
+	
 	<!-- 하나만 검색 -->
 	<select id="selectProfessor" resultType="com.example.demo.model.Professor" parameterType="hashmap">
 		SELECT * FROM PROFESSOR WHERE PROFNO = #{profNo}
