@@ -118,7 +118,7 @@
                 //info :{},
                 kind: 1,
                 title : "",
-                contents : ""
+                contents : "",
             };
         },
         methods: {
@@ -128,7 +128,8 @@
                 // console.log(self.contents); // 실제로 어떻게 데이터 넘어가는지 확인용
                 // html 로 넘어감.
                 let param = {
-                    boardNo : self.boardNo
+                    boardNo : self.boardNo,
+                    option: "EDIT"
                 };
                 $.ajax({
                     url: "http://localhost:8080/board/view.dox",

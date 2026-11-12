@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.common.Message;
 import com.example.demo.mapper.BoardMapper;
 import com.example.demo.model.Board;
+import com.example.demo.model.Comment;
 import com.example.demo.model.File;
 
 import jakarta.servlet.http.HttpSession;
@@ -47,6 +48,17 @@ public class BoardService {
 		HashMap<String, Object> resultMap = new HashMap<>(); 
 		try {
 			Board info =boardMapper.selectBoard(map);
+			
+			// getBoard는 상세정보보기 뿐 아니라 편집 시 불러오기 시 사용됨.
+			// 근데 댓글목록은 편집 시 필요가 없음.
+			// 이런 게 많아지면 당연히 서버에 부담이 갈 수 밖에 없음.
+			// => 예외 처리 해야.
+			// 상세보기 화면에서만 댓글 목록 가져오기
+			if(map.get("option").equals("VIEW")) {
+				List<Comment> cmtList = boardMapper.selectCmt(map);
+				resultMap.put("cmtList", cmtList);				
+			}
+			
 			List<File> fileList = boardMapper.selectBoardFile(map);
 			resultMap.put("info", info);
 			resultMap.put("fileList", fileList);
@@ -167,4 +179,88 @@ public class BoardService {
 		}
 		return resultMap;
 	}
+
+	public void editCnt(HashMap<String, Object> map) {
+		HashMap<String, Object> resultMap = new HashMap<>();
+		boardMapper.updateCnt(map);
+	}
+
+	public HashMap<String, Object> addCmt(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+			resultMap.put("result", "success");	
+			if(session.getAttribute("sessionId") != null) {
+				map.put("sessionId", session.getAttribute("sessionId"));
+				int cnt = boardMapper.insertCmt(map);
+				System.out.println(map);
+				resultMap.put("result", "success");	
+				if(cnt > 0) {
+					resultMap.put("message", Message.INSERT_SUCCESS);
+				}else {
+					resultMap.put("message", Message.INSERT_FAIL);				
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.DB_ERR);
+			System.err.println(e.getMessage());
+		}
+		return resultMap;
+	}
+
+	public HashMap<String, Object> editCmt(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+
+			if(session.getAttribute("sessionId") != null) {
+				map.put("sessionId", session.getAttribute("sessionId"));
+				int cnt = boardMapper.updateCmt(map);
+				System.out.println(map);
+				resultMap.put("result", "success");	
+				resultMap.put("boardNo", map.get("boardNo"));
+				if(cnt > 0) {
+					resultMap.put("message", Message.UPDATE_SUCCESS);
+				}else {
+					resultMap.put("message", Message.UPDATE_FAIL);				
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.DB_ERR);
+			System.err.println(e.getMessage());
+		}
+		
+		return resultMap;
+	
+	}
+
+	public HashMap<String, Object> removeCmt(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<>();
+		try {
+			resultMap.put("result", "success");	
+			if(session.getAttribute("sessionId") != null) {
+				map.put("sessionId", session.getAttribute("sessionId"));
+				int cnt = boardMapper.deleteCmt(map);
+				System.out.println(map);
+				resultMap.put("result", "success");	
+				if(cnt > 0) {
+					resultMap.put("message", Message.DELETE_SUCCESS);
+				}else {
+					resultMap.put("message", Message.DELETE_FAIL);				
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("result", "fail");
+			resultMap.put("message", Message.DB_ERR);
+			System.err.println(e.getMessage());
+		}
+		return resultMap;
+	}
+
 }

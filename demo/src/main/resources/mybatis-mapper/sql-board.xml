@@ -5,7 +5,9 @@
 <mapper namespace="com.example.demo.mapper.BoardMapper">
 	<!-- 여러개 검색 -->
 	<select id="selectBoardList" parameterType="hashmap" resultType="com.example.demo.model.Board">
-		SELECT * FROM TBL_BOARD
+		SELECT * 
+		FROM TBL_BOARD B
+		INNER JOIN TBL_USER U ON B.USERID = U.USER_ID
 		WHERE TITLE LIKE CONCAT('%',#{keyword},'%')
 		ORDER BY BOARDNO DESC
 		LIMIT #{limit} OFFSET #{offset}
@@ -25,6 +27,13 @@
 	
 	<select id="selectBoardFile" parameterType="hashmap" resultType="com.example.demo.model.File">
 		SELECT * FROM TBL_BOARD_FILE
+		WHERE BOARDNO = #{boardNo}
+	</select>
+	
+	<!-- 댓글 여러개 검색 -->
+	<select id="selectCmt" parameterType="hashmap" resultType="com.example.demo.model.Comment">
+		SELECT * 
+		FROM TBL_BOARD_COMMENT 
 		WHERE BOARDNO = #{boardNo}
 	</select>
 	
@@ -60,8 +69,34 @@
 		<!--업데이트 했으면 UDATETIME 수정해줘야!-->
 	</update>
 	
+	<!--조회수 증가 업데이트-->
+	<update id="updateCnt" parameterType="hashmap">
+		UPDATE TBL_BOARD 
+		SET CNT=CNT+1
+		WHERE BOARDNO = #{boardNo} 
+		<!--업데이트 했으면 UDATETIME 수정해줘야!-->
+	</update>
+	
 	<insert id="insertBoardFile" parameterType="hashmap">
 		INSERT INTO TBL_BOARD_FILE
 		VALUES(NULL, #{idx}, #{path}, #{fileName}, #{orgName}, #{size}, #{extName})
 	</insert>
+	
+	<insert id="insertCmt" parameterType="hashmap">
+		INSERT INTO TBL_BOARD_COMMENT (COMMENTNO, BOARDNO, USERID, CONTENTS, CDATETIME,UDATETIME )
+		VALUES (NULL, #{boardNo}, #{sessionId}, #{cmtContent}, NOW(), NOW())
+	</insert>
+	
+	<update id="updateCmt" parameterType="hashmap">
+		UPDATE TBL_BOARD_COMMENT  
+		SET CONTENTS = #{cotents}
+		WHERE COMMENTNO = #{commentNo} 
+	</update>
+	
+	<update id="deleteCmt" parameterType="hashmap">
+		DELETE FROM TBL_BOARD_COMMENT  
+		WHERE COMMENTNO = #{commentNo} 
+	</update>
+	
+	
 </mapper>

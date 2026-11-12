@@ -89,7 +89,7 @@
         <table>
             <tr>
                 <!-- <th>선택</th> -->
-                <th><input type="checkbox" @click="fnSelectItem" v-model="checked" value="true"></th>
+                <th v-if="sessionRole=='A'"><input type="checkbox" @click="fnSelectItem" v-model="checked" value="true"></th>
                 <th>번호</th>
                 <th>제목</th>
                 <th>작성자</th>
@@ -97,12 +97,12 @@
             </tr>
             <tr v-for="item in list">
                 <!-- <td><input type="radio" name="board" v-model="selectItem" :value="item.boardNo"></td> -->
-                <td><input type="checkbox" @change="fnSelect" name="board" v-model="selectItemList" :value="item.boardNo"></td>
+                <td v-if="sessionRole=='A'"><input type="checkbox" @change="fnSelect" name="board" v-model="selectItemList" :value="item.boardNo"></td>
                 <td>{{item.boardNo}}</td>
                 <td><a href="javascript:;" @click="fnView(item.boardNo)">{{item.title}}</a>
                     <span class="cnt">[{{item.cnt}}]</span>
                 </td>
-                <td>{{item.userId}}</td>
+                <td>{{item.userName}}</td>
                 <td>{{item.cDateTime}}</td>
             </tr>
         </table>
@@ -115,7 +115,7 @@
         <!-- <button @click="fnRemove">삭제</button> -->
         <a href="add.do"><button>글쓰기</button></a>
         <!-- 만약 /add.do 슬래시 넣고 싶다면 board/add.do까지 작성해줘야 함 -->
-        <button @click="fnRemoveAll">삭제</button>
+        <button @click="fnRemoveAll" v-if="sessionRole=='A'">삭제</button>
     </div>
 </body>
 </html>
@@ -125,6 +125,7 @@
         data() {
             return {
                 // 변수 - (key : value)
+                code : "", //카카오 로그인 코드
                 sessionId : "${sessionId}",
                 sessionRole : "${sessionRole}",
                 sessionName : "${sessionName}",
@@ -236,11 +237,31 @@
             fnView : function(boardNo){
                 let self = this;
                 pageChange("view.do", {boardNo : boardNo});
+            },
+            fnKakao() {
+                var self = this;
+                var nparmap = {
+                    code : self.code
+                };
+                $.ajax({
+                    url: "/kakao.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: nparmap,
+                    success: function (data) {
+                        console.log(data);
+                    
+                        
+                    }
+                });
             }
         }, // methods
         mounted() {
             // 처음 시작할 때 실행되는 부분
             let self = this;
+            const queryParams = new URLSearchParams(window.location.search);
+            self.code = queryParams.get('code') || ''; 
+            self.fnKakao();
             self.fnList();
         }
     });

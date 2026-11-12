@@ -36,7 +36,22 @@
             <div v-html="info.contents"></div> 
             <!-- 문자취급 받던 html 속성을 실제로 적용해줌.-->
             <hr>
-            <button @click="fnEdit">수정</button>
+            <div v-if="sessionRole=='A' || sessionId == info.userId">
+                <button @click="fnEdit">수정</button>
+                <button @click="fnRemove">삭제</button>
+            </div>
+            <hr>
+            <div v-for="(item,index) in cmtList">
+                <span><strong>{{item.userId}}</strong></span>&nbsp;|&nbsp;
+                <span v-if="index !== editIndex">{{item.contents}}</span>
+                <input v-else type="text" v-model="editCmt">
+                <button v-if="sessionId==item.userId" @click="fnEditComment(index)">수정</button>
+                <button v-if="(sessionId==item.userId || sessionRole=='A') && index !== editIndex" @click="fnRemoveComment(item.commentNo)">삭제</button>
+            </div>
+            <div>
+                댓글작성 : <input v-model="cmtContent" @keyup.enter="fnCmtAdd" style="width: 300px;">
+                <button @click="fnCmtAdd">등록</button>
+            </div>
         </div>
     </div>
 </body>
@@ -49,7 +64,16 @@
                 // 변수 - (key : value)
                 boardNo : "${boardNo}",
                 info: {},
-                fileList : []
+                fileList : [],
+                cmtList : [],
+
+                cmtContent: "",
+                
+                sessionId : "${sessionId}",
+                sessionRole : "${sessionRole}",
+
+                editIndex:-1,
+                editCmt:""
             };
         },
         methods: {
@@ -57,7 +81,8 @@
             fnInfo : function () {
                 let self = this;
                 let param = {
-                    boardNo : self.boardNo
+                    boardNo : self.boardNo,
+                    option: "VIEW"
                 };
                 $.ajax({
                     url: "view.dox",
@@ -68,12 +93,101 @@
                         console.log(data);
                         self.info = data.info;
                         self.fileList = data.fileList;
+                        self.cmtList = data.cmtList;
                     }
                 });
             },
             fnEdit : function(){
                 let self = this;
                 pageChange("edit.do", {boardNo : self.boardNo});
+            },
+            fnRemove : function () {
+                let self = this;
+                let param = {
+                    boardNo : self.boardNo
+                };
+
+                if(!confirm("정말 삭제?")){
+                    return;
+                }
+                $.ajax({
+                    url: "remove.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(message);
+                        if(data.result == "success"){
+                            location.href="list.do";
+                        }
+                    }
+                });
+            },
+            fnCmtAdd: function() {
+                let self = this;
+                let param = {
+                    cmtContent : self.cmtContent,
+                    boardNo : self.boardNo
+                };
+                $.ajax({
+                    url: "add-comment.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(data.message);
+                        if(data.result == "success"){
+                            self.fnInfo();
+                            self.cmtContent = "";
+                        }
+                    }
+                });
+            },
+            fnEditComment : function(index){
+                let self = this;
+                if(index != self.editIndex){
+                    self.editIndex = index;
+                    self.editCmt = self.cmtList[index].contents;
+                    return;
+                }
+                let param = {
+                    cotents : self.editCmt,
+                    commentNo : self.cmtList[index].commentNo
+                }
+                $.ajax({
+                    url: "edit-comment.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(data.message);
+                        if(data.result == "success"){
+                            self.fnInfo();
+                            // 초기화
+                            self.editCmt = "";
+                            self.editIndex = -1;
+                        }
+                    }
+                });
+            },
+            fnRemoveComment : function(commentNo){
+                let self = this;
+                
+                let param = {
+                    commentNo
+                }
+                $.ajax({
+                    url: "remove-comment.dox",
+                    dataType: "json",
+                    type: "POST",
+                    data: param,
+                    success: function (data) {
+                        alert(data.message);
+                        if(data.result == "success"){
+                            self.fnInfo();
+                        }
+                    }
+                });
             }
         }, // methods
         mounted() {

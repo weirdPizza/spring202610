@@ -105,21 +105,25 @@
                 }
 
                 // 3. 비밀번호는 최소 8글자 
-                if(self.pwd1.length < 8 || self.pwd2.length < 8){
+                /*if(self.pwd1.length < 8 || self.pwd2.length < 8){
                     alert("비밀번호는 최소 8글자입니다.");
                     return;
                 }
+                    */
                 // 4. 비밀번호는 특수문자 필수 포함 
-                const passwordRegex = /^(?=.*[!@#$%^&*()\-_=+\\\/\[\]{};:\'",.<>\/?]).+$/;
+                /*const passwordRegex = /^(?=.*[!@#$%^&*()\-_=+\\\/\[\]{};:\'",.<>\/?]).+$/;
                 if(!passwordRegex.test(self.pwd1)){
                     alert("비밀번호는 특수문자 필수입니다.")
                     return;
                 }
+                    */
                 // 5. 비밀번호와 비밀번호 확인은 같아야 함
+                /*
                 if(self.pwd1 != self.pwd2){
                     alert("비밀번호가 서로 다릅니다.");
                     return;
                 }
+                    */
                 // 6. 이름은 한글만
                 const nameRegex = /^[가-힣]+$/;
                 if(!nameRegex.test(self.userName)){
@@ -147,7 +151,7 @@
                         console.log(data);
                         if(data.result=="success"){
                             alert("가입에 성공했습니다.")
-                            location.href="user/list.do";
+                            //location.href="user/list.do";
                         }else{
                             alert("시스템 에러로 가입에 실패했습니다.")
                         }
