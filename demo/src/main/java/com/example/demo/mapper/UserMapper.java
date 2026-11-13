@@ -10,8 +10,14 @@ import com.example.demo.model.User;
 public interface UserMapper {
 	// 사용자 조회
 	User selectUser(HashMap<String, Object> map);
+	
+	int selectUserAuth(HashMap<String, Object> map);
 
 	// 사용자 가입, 추가
 	int insertUser(HashMap<String, Object> map);
+
+	// 비밀번호 재설정
+	int updateUserPwd(HashMap<String, Object> map);
+
 
 }

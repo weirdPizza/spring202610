@@ -30,4 +30,7 @@ public interface ProductMapper {
 	
 	// 첨부파일 목록
 	List<File> selectProductFile(HashMap<String, Object> map);
+
+	// 결제 정보 추가
+	int insertPayment(HashMap<String, Object> map);
 }

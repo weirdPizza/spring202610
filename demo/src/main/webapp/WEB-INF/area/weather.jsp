@@ -29,18 +29,19 @@
         <!-- html 코드는 id가 app인 태그 안에서 작업 -->
         <div>
             <select v-model="si" @change="fnGuList">
-                <option value="">::선택::</option>
-                <option v-for="item in siList" :value="item.si">{{item.si}}</option>
+                시 : <option value="">:: 선택 ::</option>
+                <option :value="item.si" v-for="item in siList">{{item.si}}</option>
             </select>
             <select v-model="gu" @change="fnDongList">
-                <option value="">::선택::</option>
-                <option v-for="item in guList" :value="item.gu">{{item.gu}}</option>
+                구 : <option value="">:: 선택 ::</option>
+                <option :value="item.gu" v-for="item in guList">{{item.gu}}</option>
             </select>
-            <select v-model="dong">
-                <option value="">::선택::</option>
-                <option v-for="item in dongList" :value="item.dong">{{item.dong}}</option>
+            <select v-model="dong"  @change="fnGetWeather">
+                동 : <option value="">:: 선택 ::</option>
+                <option :value="item" v-for="item in dongList">{{item.dong}}</option>
             </select>
         </div>
+        
     </div>
 </body>
 </html>
@@ -50,40 +51,41 @@
         data() {
             return {
                 // 변수 - (key : value)
-                siList:[],
-                guList:[],
-                dongList:[],
-                si:"",
-                gu:"",
-                dong:""
+                siList : [],
+                guList : [],
+                dongList : [],
+                si : "",
+                gu : "",
+                dong : {}
             };
         },
         methods: {
             // 함수(메소드) - (key : function())
             fnSiList : function () {
                 let self = this;
-                let param = {
-                    si : self.si,
-                };
+                self.dongList = [];
+                self.dong = "";
+
+                let param = {};
                 $.ajax({
                     url: "http://localhost:8080/area/si.dox",
                     dataType: "json",
                     type: "POST",
                     data: param,
                     success: function (data) {
-
                         console.log(data);
                         self.siList = data.siList;
-                        
-
                     }
                 });
             },
-            fnGuList : function() {
+            fnGuList : function () {
                 let self = this;
+                self.guList = [];
+                self.gu = "";
+                self.dongList = [];
+                self.dong = "";
                 let param = {
-                    si : self.si,
-                    gu : self.gu
+                    si : self.si
                 };
                 $.ajax({
                     url: "http://localhost:8080/area/gu.dox",
@@ -91,19 +93,15 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        if(self.dong.length!=0){
-                            self.dong = "";
-                            self.dongList="";
-                            self.gu = "";
-                            self.guList = "";
-                        }
                         console.log(data);
                         self.guList = data.guList;
                     }
                 });
             },
-            fnDongList : function() {
+            fnDongList : function () {
                 let self = this;
+                self.dongList = [];
+                self.dong = "";
                 let param = {
                     si : self.si,
                     gu : self.gu
@@ -114,25 +112,24 @@
                     type: "POST",
                     data: param,
                     success: function (data) {
-                        if(self.gu.length!=0){
-                            self.gu = ""; // 모르겠음 쌤 코드 복붙해라 수업끝나고
-                        }
                         console.log(data);
                         self.dongList = data.dongList;
                     }
                 });
             },
-            fnGetWeather : function() {
+
+            fnGetWeather : function () {
                 let self = this;
                 let param = {
-                    ServiceKey:decodeURIComponent(""),
+                    serviceKey : decodeURIComponent("56b6e072bfb5195d760172d9e2f785fb46c741becdcf4115aca47e48b49de031"),
                     pageNo : 1,
                     numOfRows : 1000,
                     dataType : "JSON",
-                    base_date : "20261112",
-                    base_time : "1600",
-                    nx : 55,
-                    ny : 125
+                    base_date : "20261113",
+                    base_time : "0900",
+                    nx : self.dong.nx,
+                    ny : self.dong.ny
+
                 };
                 $.ajax({
                     url: "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst",
@@ -140,9 +137,24 @@
                     type: "GET",
                     data: param,
                     success: function (data) {
-          
                         console.log(data);
-                     
+                        let items = data.response.body.items.item;
+                        for(let i=0; i<items.length; i++){
+                            let item = items[i];
+                            if(item.category == 'T1H'){
+                                // 기온에 대한 처리, 단위 : ℃
+                                console.log("기온 ==> ", item.obsrValue);
+                            }
+                            if(item.category == 'RN1'){
+                                // 강수량에 대한 처리, 단위 : mm
+                                console.log("1시간 강수량 ==> ", item.obsrValue);
+                            }
+                            if(item.category == 'PTY'){
+                                // 강수형태에 대한 처리, 단위 : mm
+                                // (초단기) 없음(0), 비(1), 비/눈(2), 눈(3), 소나기(4), 빗방울(5), 빗방울눈날림(6), 눈날림(7) 
+                                console.log("강수형태 ==> ", item.obsrValue);
+                            }
+                        }
                     }
                 });
             }

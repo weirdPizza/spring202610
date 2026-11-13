@@ -59,4 +59,11 @@
 		INSERT INTO PRODUCT_FILE
 		VALUES(NULL, #{idx}, #{path}, #{fileName}, #{orgName}, #{size}, #{extName})
 	</insert>
+	
+		<!--결제 정보 추가-->
+	<insert id="insertPayment" parameterType="hashmap">
+		INSERT INTO PRODUCT_ORDERS 
+		VALUES (NULL, #{sessionId}, #{productId}, 1,#{orderPrice}, 'ORDERED', NOW(), '인천','DONE', #{merchantUid})
+	</insert>
+	
 </mapper>

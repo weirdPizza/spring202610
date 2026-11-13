@@ -9,6 +9,7 @@ public class User {
 	private String userName;
 	private String addr;
 	private String role;
+	private String phone;
 	
 	// 롬복 (@Data) 를 이용하면 자동으로 get, set 메소드를 만들어 줘서
 	// 아래처럼 직접 선언할 필요가 없다.

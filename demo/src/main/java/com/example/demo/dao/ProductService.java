@@ -11,10 +11,13 @@ import com.example.demo.mapper.ProductMapper;
 import com.example.demo.model.File;
 import com.example.demo.model.Product;
 
+import jakarta.servlet.http.HttpSession;
+
 @Service
 public class ProductService {
 	@Autowired
 	ProductMapper productMapper;
+
 	
 	public HashMap<String, Object> getProductList(HashMap<String, Object> map){
 		HashMap<String, Object> resultMap = new HashMap<>(); 
@@ -109,6 +112,28 @@ public class ProductService {
 				System.err.println(e.getMessage());
 			}
 			return resultMap;
+	}
+
+	public HashMap<String, Object> addPayment(HashMap<String, Object> map) {
+		// TODO Auto-generated method stub
+		HashMap<String, Object> resultMap = new HashMap<>(); 
+		try {
+
+			int cnt = productMapper.insertPayment(map);
+			System.out.println(map);
+			if(cnt > 0) {
+				resultMap.put("message", Message.INSERT_SUCCESS);
+			}else {
+				resultMap.put("message", Message.INSERT_FAIL);				
+			}
+			resultMap.put("result", "success");
+		} catch (Exception e) {
+			// TODO: handle exception
+			resultMap.put("message", Message.DB_ERR);				
+			resultMap.put("result", "fail");
+			System.err.println(e.getMessage());
+		}
+		return resultMap;
 	}
 
 	
