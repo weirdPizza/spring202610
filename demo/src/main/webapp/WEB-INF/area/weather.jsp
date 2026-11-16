@@ -121,7 +121,7 @@
             fnGetWeather : function () {
                 let self = this;
                 let param = {
-                    serviceKey : decodeURIComponent("56b6e072bfb5195d760172d9e2f785fb46c741becdcf4115aca47e48b49de031"),
+                    serviceKey : decodeURIComponent(""),
                     pageNo : 1,
                     numOfRows : 1000,
                     dataType : "JSON",
